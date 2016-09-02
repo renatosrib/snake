@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cobra de berlim</title>
+</head>
+<body>
+<script type="text/javascript" charset="utf-8" async defer>
+	//Direções
+	var LEFT = 0, UP = 1,  RIGHT = 2, DOWN =3;
+
+	//Teclas
+	var KEY_LEFT = 37, KEY_UP = 38, KEY_RIGHT = 39, KEY_DOWN = 40;
+
+	//Constantes das células
+	var EMPTY = 0, SNAKE_1 =1, SNAKE_2 = 2, FRUIT = 3;
+	//QTD de linhas e colunas	
+	var COLS = 26, ROWS = 26;
+
+	var grid = {
+		width: null,
+		height: null,
+		grid: null,
+
+		init: function(direction, width, height) {
+			this.width = width;
+			this.height = height;
+			this.grid = [];
+
+			for(var x = 0; x < width, x++ ) {
+				grid.push([]);
+				for(var y = 0; y < height, y++) {
+					grid[x].push
+				}
+			}
+		}
+
+		set: function(x, y, content) {
+			this.grid[x][y] = content
+		}
+
+		get: function(x, y) {
+			htis.grid[x][y]
+		}
+	}
+
+</script>
+</body>
+</html>
