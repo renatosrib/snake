@@ -16,12 +16,16 @@
 	//QTD de linhas e colunas	
 	var COLS = 26, ROWS = 26;
 
+	//Estados
+	var frames = 0;
+	var keyPressed = -1;
+
 	var grid = {
 		width: null,
 		height: null,
 		grid: null,
 
-		init: function(direction, width, height) {
+		init: function(d, width, height) {
 			this.width = width;
 			this.height = height;
 			this.grid = [];
@@ -29,19 +33,84 @@
 			for(var x = 0; x < width, x++ ) {
 				grid.push([]);
 				for(var y = 0; y < height, y++) {
-					grid[x].push
+					grid[x].push(EMPTY)
 				}
 			}
 		}
 
 		set: function(x, y, content) {
-			this.grid[x][y] = content
+			this.grid[x][y] = content;
 		}
 
 		get: function(x, y) {
-			htis.grid[x][y]
+			return this.grid[x][y];
 		}
 	}
+
+	var snake = {
+		direction : null;
+		queue: null;
+
+		init: function (x, y, direction) {
+			 // body...  
+		}
+
+		insert: function(x, y) {
+
+		}
+
+		remove: function () {
+			 // body...  
+		}
+	}
+
+	function putFood() {
+		let emptyCells = []
+		for(var x = 0; x < grid.width; x++) {	
+			for(var y = 0; y < grid.height; y++ ) {
+				let cellContent = grid.get(x, y);
+				if(content == EMPTY) {
+					emptyCells.push({x: x, y:y});
+				}
+			}
+		}
+		let fruitPosition = emptyCells[new Date() % emptyCells.length];
+		grid.set(fruitPosition.x, fruitPosition.y, FRUIT);
+	}
+
+	function play() {
+		let startPosition = {x: 100, y: 100};
+		snake.init(startPosition.x, startPosition.y, RIGHT);
+		grid.init(RIGHT, startPosition.x, startPosition.y);
+
+		putFood();
+	}
+
+	function main() {
+		let canvas = document.createElement("canvas");
+		canvas.width = COLS * 20;
+		canvas.height = ROWS * 20;
+		canvas.getContext("2d");
+		document.body.appendChild(canvas);
+
+		loop();
+
+	}
+
+	function loop() {
+		update();
+		draw();
+	}
+
+	function update() {
+
+	}
+
+	function draw() {
+
+	}
+
+	main();
 
 </script>
 </body>
