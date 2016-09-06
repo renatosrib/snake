@@ -20,6 +20,8 @@
 	var frames = 0;
 	var keyPressed = -1;
 
+	var canvas = document.createElement("canvas");
+
 	var grid = {
 		width: null,
 		height: null,
@@ -30,17 +32,18 @@
 			this.height = height;
 			this.grid = [];
 
-			for(var x = 0; x < width, x++ ) {
-				grid.push([]);
-				for(var y = 0; y < height, y++) {
-					grid[x].push(EMPTY)
+			for(var x = 0; x < width; x++ ) {				
+				grid.grid.push([]);
+				for(var y = 0; y < height; y++) {
+					grid.grid[x].push(EMPTY);
 				}
+				console.log(grid);
 			}
-		}
+		},
 
 		set: function(x, y, content) {
 			this.grid[x][y] = content;
-		}
+		},
 
 		get: function(x, y) {
 			return this.grid[x][y];
@@ -48,16 +51,16 @@
 	}
 
 	var snake = {
-		direction : null;
-		queue: null;
+		direction : null,
+		queue: null,
 
 		init: function (x, y, direction) {
 			 // body...  
-		}
+		},
 
 		insert: function(x, y) {
 
-		}
+		},
 
 		remove: function () {
 			 // body...  
@@ -86,13 +89,12 @@
 		putFood();
 	}
 
-	function main() {
-		let canvas = document.createElement("canvas");
+	function main() {		
 		canvas.width = COLS * 20;
 		canvas.height = ROWS * 20;
 		canvas.getContext("2d");
-		document.body.appendChild(canvas);
-
+		document.body.appendChild(canvas);		
+		play();
 		loop();
 
 	}
@@ -100,14 +102,39 @@
 	function loop() {
 		update();
 		draw();
+
+		window.requestAnimationFrame(loop, canvas);
 	}
 
 	function update() {
-
-	}
+		frames++;
+	}	
 
 	function draw() {
+		let tw = canvas.width/grid.width;
+		let th = canvas.height/grid.height;
+		//console.log(grid);
 
+		for(var x = 0; x < grid.width; x++ ) {				
+			for(var y = 0; y < grid.height; y++) {
+				switch(grid.grid.get(x, y)) {
+					case EMPTY:
+						context.fillStyle = "#fff";
+						break;
+					case SNAKE_1:
+						context.fillStyle = "#fff";
+						break;
+					case SNAKE_2:
+						context.fillStyle = "#fff";
+						break;
+					case FRUIT:
+						context.fillStyle = "#fff";
+						break;	
+					console.log(context);					
+					context.fillRect(x * th, y * th, tw, th);
+				} 
+			}			
+		}
 	}
 
 	main();
