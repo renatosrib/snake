@@ -1,102 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Cobra de berlim</title>
+	<title>Simple</title>
+	<<style type="text/css" >
+		canvas {
+			display: block;
+			position: absolute;
+			border: 1px solid #000;
+			margin: auto;
+			top: 0;
+			bottom: 0;
+			right: 0;
+			left: 0;
+		}
+	</style>
 </head>
 <body>
-<script type="text/javascript" charset="utf-8" async defer>
-	//Direções
-	var LEFT = 0, UP = 1,  RIGHT = 2, DOWN =3;
 
-	//Teclas
-	var KEY_LEFT = 37, KEY_UP = 38, KEY_RIGHT = 39, KEY_DOWN = 40;
-
-	//Constantes das células
-	var EMPTY = 0, SNAKE_1 =1, SNAKE_2 = 2, FRUIT = 3;
-	//QTD de linhas e colunas	
+<script charset="utf-8" async defer>
+	//Constants
 	var COLS = 26, ROWS = 26;
 
-	//Estados
-	var frames = 0;
-	var keyPressed = -1;
+	// Ids 
+	var EMPTY = 0, SNAKE = 1, FRUIT =2;
 
-	var canvas = document.createElement("canvas");
+	//Directions
+	var LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
+
+	//KeyCodes
+	var KEY_LEFT = 37, KEY_UP = 38, KEY_RIGHT = 39, KEY_DOWN = 40;
 
 	var grid = {
-		width: null,
+
+		width : null,
 		height: null,
-		grid: null,
+		_grid: null,
 
-		init: function(d, width, height) {
-			this.width = width;
-			this.height = height;
-			this.grid = [];
+		init: function(d, c, r)  {
+			this.width = c;
+			this.height = r;
+			this._grid = [];
 
-			for(var x = 0; x < width; x++ ) {				
-				grid.grid.push([]);
-				for(var y = 0; y < height; y++) {
-					grid.grid[x].push(EMPTY);
+			for(var x = 0; x< c; x++) {
+				this._grid.push([]);
+				for(var y = 0; y < r; y++) {
+					this._grid[x].push(d);
 				}
-				console.log(grid);
 			}
 		},
 
-		set: function(x, y, content) {
-			this.grid[x][y] = content;
+		set: function(val, x, y){			
+			this._grid[x][y] = val;
 		},
 
-		get: function(x, y) {
-			return this.grid[x][y];
+		get: function(x, y)  {
+			return this._grid[x][y];
 		}
 	}
 
 	var snake = {
-		direction : null,
-		queue: null,
 
-		init: function (x, y, direction) {
-			 // body...  
+		direction: null,
+		last: null,
+		_queue: null,
+
+		init: function(d, x, y) {
+			this.direction = d;
+
+			this._queue = [];
+			this.insert(x, y);
 		},
 
-		insert: function(x, y) {
-
+		insert: function(x, y)  {
+			this._queue.unshift({ x:x, y:y});
+			this.last = this._queue[0];
 		},
 
-		remove: function () {
-			 // body...  
-		}
+		remove: function() {
+			return this._queue.pop();
+		}		
 	}
 
-	function putFood() {
-		let emptyCells = []
-		for(var x = 0; x < grid.width; x++) {	
-			for(var y = 0; y < grid.height; y++ ) {
-				let cellContent = grid.get(x, y);
-				if(content == EMPTY) {
-					emptyCells.push({x: x, y:y});
+	function setFood() {
+		var empty = [];
+		for(var x = 0; x < grid.width; x++) {
+			for(var y = 0; y < grid.height; y++) {
+				if(grid.get(x, y) === EMPTY) {
+					empty.push({x:x, y:y});					
 				}
 			}
 		}
-		let fruitPosition = emptyCells[new Date() % emptyCells.length];
-		grid.set(fruitPosition.x, fruitPosition.y, FRUIT);
+		var randpos = empty[Math.floor(Math.random()*empty.length)];		
+		grid.set(FRUIT, randpos.x, randpos.y);
 	}
 
-	function play() {
-		let startPosition = {x: 100, y: 100};
-		snake.init(startPosition.x, startPosition.y, RIGHT);
-		grid.init(RIGHT, startPosition.x, startPosition.y);
+	//Game objects
+	var canvas, ctx, keystate, frames;
 
-		putFood();
-	}
-
-	function main() {		
+	function main() {
+		canvas = document.createElement("canvas");
 		canvas.width = COLS * 20;
 		canvas.height = ROWS * 20;
-		canvas.getContext("2d");
-		document.body.appendChild(canvas);		
-		play();
-		loop();
+		ctx = canvas.getContext("2d");
+		document.body.appendChild(canvas);
+		console.log(document.body);
 
+		frames = 0;
+		keystate = {};
+
+		document.addEventListener("keydown", function(evt){
+			keystate[evt.keyCode] = true;					
+		});
+
+		document.addEventListener("keyup", function(evt) {
+			delete keystate[evt.keyCode];
+		});
+
+		init();
+		loop();
+	}
+
+	function init() {
+		grid.init(EMPTY, COLS, ROWS);
+
+		var sp = {x: Math.floor(COLS/2), y:ROWS -1};
+		snake.init(UP, sp.x, sp.y);
+		grid.set(SNAKE, sp.x, sp.y);
+
+		setFood();
 	}
 
 	function loop() {
@@ -106,37 +137,74 @@
 		window.requestAnimationFrame(loop, canvas);
 	}
 
+	//Atualiza a posição
 	function update() {
 		frames++;
-	}	
+		if(keystate[KEY_LEFT]) snake.direction = LEFT;
+		if(keystate[KEY_UP]) snake.direction = UP;
+		if(keystate[KEY_RIGHT]) snake.direction = RIGHT;
+		if(keystate[KEY_DOWN]) snake.direction = DOWN;
 
-	function draw() {
-		let tw = canvas.width/grid.width;
-		let th = canvas.height/grid.height;
-		//console.log(grid);
+		//O número de frames determina a velocidade do jogo
+		if(frames%5 === 0) {
+			debugger;
+			var nx = snake.last.x;
+			var ny = snake.last.y;
 
-		for(var x = 0; x < grid.width; x++ ) {				
-			for(var y = 0; y < grid.height; y++) {
-				switch(grid.grid.get(x, y)) {
-					case EMPTY:
-						context.fillStyle = "#fff";
-						break;
-					case SNAKE_1:
-						context.fillStyle = "#fff";
-						break;
-					case SNAKE_2:
-						context.fillStyle = "#fff";
-						break;
-					case FRUIT:
-						context.fillStyle = "#fff";
-						break;	
-					console.log(context);					
-					context.fillRect(x * th, y * th, tw, th);
-				} 
-			}			
-		}
+			switch (snake.direction) {
+				case LEFT:
+					nx--;
+					break;
+				case UP:
+					ny--;
+					break;
+				case RIGHT:
+					nx++;
+					break;
+				case DOWN:
+					ny++;
+					break;				
+			}	
+			if( 0 > nx || nx > grid.width -1 ||
+				0 > ny || ny > grid.height - 1) {
+				return init();
+			}
+
+			if(grid.get(nx, ny) == FRUIT) {
+				setFood();
+			}
+
+			var tail = snake.remove();
+			grid.set(EMPTY, tail.x, tail.y);
+			tail.x = nx;
+			tail.y = ny;
+
+			grid.set(SNAKE, tail.x, tail.y);
+			snake.insert(tail.x, tail.y);
+		}	
 	}
 
+	function draw() {
+		var tw = canvas.width/grid.width;
+		var th = canvas.height/grid.height;
+		
+		for(var x = 0; x < grid.width; x++) {
+			for(var y = 0; y < grid.height; y++) {			
+				switch(grid.get(x, y)) {
+					case EMPTY:
+						ctx.fillStyle = "#fff";
+						break;
+					case SNAKE:
+						ctx.fillStyle = "#0ff";
+						break;
+					case FRUIT:
+						ctx.fillStyle = "#f00";
+						break;
+				}										
+				ctx.fillRect(x * tw, y * th, tw, th);	
+			}
+		}
+	}
 	main();
 
 </script>
