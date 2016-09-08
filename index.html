@@ -21,8 +21,8 @@
 	//Constants
 	var COLS = 26, ROWS = 26;
 
-	// Ids 
-	var EMPTY = 0, WALL = 1, FRUIT =2, FASTER = 3, SLOWER = 4 , SNAKE1 = 5, SNAKE2 = 6;
+	// Ids
+	var EMPTY = 0, WALL = 1, FRUIT =2, FASTER = 3, SLOWER = 4 , SNAKE1 = 5, SNAKE2 = 6 ,WALL = 7;
 
 	//Directions
 	var LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
@@ -30,6 +30,7 @@
 	//KeyCodes
 	var KEY_LEFT1 = 37, KEY_UP1 = 38, KEY_RIGHT1 = 39, KEY_DOWN1 = 40;
 	var KEY_LEFT2 = 65, KEY_UP2 = 87, KEY_RIGHT2 = 68, KEY_DOWN2 = 83;
+	var BLOCK_1 = 16, BLOCK_2 = 32;
 
 	//Speed
 	var NORMAL = 5, FAST = 2
@@ -53,7 +54,7 @@
 			}
 		},
 
-		set: function(val, x, y){			
+		set: function(val, x, y){
 			this._grid[x][y] = val;
 		},
 
@@ -83,7 +84,7 @@
 
 		remove: function() {
 			return this._queue.pop();
-		}		
+		}
 	}
 
 	var snake2 = {
@@ -107,7 +108,7 @@
 
 		remove: function() {
 			return this._queue.pop();
-		}		
+		}
 	}
 
 
@@ -116,11 +117,11 @@
 		for(var x = 0; x < grid.width; x++) {
 			for(var y = 0; y < grid.height; y++) {
 				if(grid.get(x, y) === EMPTY) {
-					empty.push({x:x, y:y});					
+					empty.push({x:x, y:y});
 				}
 			}
 		}
-		var randpos = empty[Math.floor(Math.random()*empty.length)];		
+		var randpos = empty[Math.floor(Math.random()*empty.length)];
 		grid.set(FRUIT, randpos.x, randpos.y);
 	}
 
@@ -129,12 +130,12 @@
 		for(var x = 0; x < grid.width; x++) {
 			for(var y = 0; y < grid.height; y++) {
 				if(grid.get(x, y) === EMPTY) {
-					empty.push({x:x, y:y});					
+					empty.push({x:x, y:y});
 				}
 			}
 		}
-		var randpos = empty[Math.floor(Math.random()*empty.length)];		
-		grid.set(FASTER, randpos.x, randpos.y);		
+		var randpos = empty[Math.floor(Math.random()*empty.length)];
+		grid.set(FASTER, randpos.x, randpos.y);
 	}
 
 	function setSlowerTerrain() {
@@ -142,12 +143,12 @@
 		for(var x = 0; x < grid.width; x++) {
 			for(var y = 0; y < grid.height; y++) {
 				if(grid.get(x, y) === EMPTY) {
-					empty.push({x:x, y:y});					
+					empty.push({x:x, y:y});
 				}
 			}
 		}
-		var randpos = empty[Math.floor(Math.random()*empty.length)];		
-		grid.set(SLOWER, randpos.x, randpos.y);		
+		var randpos = empty[Math.floor(Math.random()*empty.length)];
+		grid.set(SLOWER, randpos.x, randpos.y);
 	}
 
 	//Game objects
@@ -166,7 +167,7 @@
 		keystate = {};
 
 		document.addEventListener("keydown", function(evt){
-			keystate[evt.keyCode] = true;					
+			keystate[evt.keyCode] = true;
 		});
 
 		document.addEventListener("keyup", function(evt) {
@@ -179,7 +180,7 @@
 
 	function init() {
 		grid.init(EMPTY, COLS, ROWS);
-		setFasterTerrain();		
+		setFasterTerrain();
 
 		var sp1 = {x: Math.floor(COLS/2), y:ROWS -1};
 		snake1.init(UP, sp1.x, sp1.y);
@@ -195,6 +196,8 @@
 	}
 
 	function loop() {
+
+
 		update();
 		draw();
 
@@ -214,13 +217,18 @@
 		if(keystate[KEY_RIGHT2] && snake2.direction !== LEFT) snake2.direction = RIGHT;
 		if(keystate[KEY_DOWN2] && snake2.direction !== UP) snake2.direction = DOWN;
 
+		var putBlock1 = false, putBlock2 = false;
+		if(keystate[BLOCK_1] && snake1._queue.length >1) putBlock1 = true;
+		if(keystate[BLOCK_2] && snake2._queue.length >1) putBlock2 = true;
+
 		//O número de frames determina a velocidade do jogo
-		if(frames%snake1.speed === 0) {			
+
+		if(frames%snake1.speed === 0) {
 			var nx = snake1.last.x;
 			var ny = snake1.last.y;
 
 			switch (snake1.direction) {
-				case LEFT:					
+				case LEFT:
 					nx--;
 					break;
 				case UP:
@@ -231,46 +239,51 @@
 					break;
 				case DOWN:
 					ny++;
-					break;				
-			}	
+					break;
+			}
 			if( 0 > nx || nx > grid.width -1 ||
 				0 > ny || ny > grid.height - 1 ||
 				grid.get(nx, ny) === SNAKE1 ||
-				grid.get(nx, ny) === SNAKE2)  {				
+				grid.get(nx, ny) === SNAKE2 ||
+				grid.get(nx, ny) === WALL)  {
 				return init();
-			}	
+			}
 
-			if(grid.get(nx, ny) == FRUIT) {				
-				console.log(snake1._queue)				
+			if(grid.get(nx, ny) == FRUIT) {
+				console.log(snake1._queue)
 				var tail = {x:nx, y:ny};
 				setFood();
-			} else{				
+			} else{
 				var tail = snake1.remove();
 				grid.set(EMPTY, tail.x, tail.y);
 				tail.x = nx;
 				tail.y = ny;
-			}	
+			}
 
-			if(grid.get(nx, ny) == FASTER) {				
-				snake1.speed = FAST;	
-				setFasterTerrain();	
+			if(grid.get(nx, ny) == FASTER) {
+				snake1.speed = FAST;
+				setFasterTerrain();
 				setSlowerTerrain();
 			}
 
-			if(grid.get(nx, ny) == SLOWER) {				
-				snake1.speed = NORMAL;					
-			}		
+			if(grid.get(nx, ny) == SLOWER) {
+				snake1.speed = NORMAL;
+			}
 
 			grid.set(SNAKE1, tail.x, tail.y);
 			snake1.insert(tail.x, tail.y);
-		}	
+			if(putBlock1){
+					var tail = snake1.remove();
+					grid.set(WALL, tail.x, tail.y);
+			}
+		}
 
-		if(frames%snake2.speed === 0) {			
+		if(frames%snake2.speed === 0) {
 			var nx = snake2.last.x;
 			var ny = snake2.last.y;
 
 			switch (snake2.direction) {
-				case LEFT:					
+				case LEFT:
 					nx--;
 					break;
 				case UP:
@@ -281,47 +294,53 @@
 					break;
 				case DOWN:
 					ny++;
-					break;				
-			}	
+					break;
+			}
 			if( 0 > nx || nx > grid.width -1 ||
 				0 > ny || ny > grid.height - 1 ||
 				grid.get(nx, ny) === SNAKE1 ||
-				grid.get(nx, ny) === SNAKE2)  {				
+				grid.get(nx, ny) === SNAKE2 ||
+				grid.get(nx, ny) === WALL)  {
 				return init();
-			}	
+			}
 
-			if(grid.get(nx, ny) == FRUIT) {				
-				console.log(snake2._queue)				
+			if(grid.get(nx, ny) == FRUIT) {
+				console.log(snake2._queue)
 				var tail = {x:nx, y:ny};
 				setFood();
-			} else{				
+			} else{
 				var tail = snake2.remove();
 				grid.set(EMPTY, tail.x, tail.y);
 				tail.x = nx;
 				tail.y = ny;
-			}	
+			}
 
-			if(grid.get(nx, ny) == FASTER) {				
-				snake2.speed = FAST;	
-				setFasterTerrain();	
+			if(grid.get(nx, ny) == FASTER) {
+				snake2.speed = FAST;
+				setFasterTerrain();
 				setSlowerTerrain();
 			}
 
-			if(grid.get(nx, ny) == SLOWER) {				
-				snake2.speed = NORMAL;					
-			}		
+			if(grid.get(nx, ny) == SLOWER) {
+				snake2.speed = NORMAL;
+			}
 
 			grid.set(SNAKE2, tail.x, tail.y);
 			snake2.insert(tail.x, tail.y);
-		}	
+
+			if(putBlock2){
+					var tail = snake2.remove();
+					grid.set(WALL, tail.x, tail.y);
+			}
+		}
 	}
 
 	function draw() {
 		var tw = canvas.width/grid.width;
 		var th = canvas.height/grid.height;
-		
+
 		for(var x = 0; x < grid.width; x++) {
-			for(var y = 0; y < grid.height; y++) {			
+			for(var y = 0; y < grid.height; y++) {
 				switch(grid.get(x, y)) {
 					case EMPTY:
 						ctx.fillStyle = "#fff";
@@ -344,8 +363,8 @@
 					case SNAKE2:
 						ctx.fillStyle = '#F49600';
 						break;
-				}										
-				ctx.fillRect(x * tw, y * th, tw, th);	
+				}
+				ctx.fillRect(x * tw, y * th, tw, th);
 			}
 		}
 	}
