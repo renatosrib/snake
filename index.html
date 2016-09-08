@@ -22,7 +22,7 @@
 	var COLS = 26, ROWS = 26;
 
 	// Ids 
-	var EMPTY = 0, SNAKE = 1, FRUIT =2, FASTER = 3, SLOWER = 4;
+	var EMPTY = 0, WALL = 1, FRUIT =2, FASTER = 3, SLOWER = 4 , SNAKE1 = 5, SNAKE2 = 6;
 
 	//Directions
 	var LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
@@ -183,12 +183,12 @@
 
 		var sp1 = {x: Math.floor(COLS/2), y:ROWS -1};
 		snake1.init(UP, sp1.x, sp1.y);
-		grid.set(SNAKE, sp1.x, sp1.y);
+		grid.set(SNAKE1, sp1.x, sp1.y);
 		snake1.speed = NORMAL;
 
 		var sp2 = {x: Math.floor(COLS-1), y:ROWS /2};
 		snake2.init(UP, sp2.x, sp2.y);
-		grid.set(SNAKE, sp2.x, sp2.y);
+		grid.set(SNAKE2, sp2.x, sp2.y);
 		snake2.speed = NORMAL;
 
 		setFood();
@@ -235,7 +235,8 @@
 			}	
 			if( 0 > nx || nx > grid.width -1 ||
 				0 > ny || ny > grid.height - 1 ||
-				grid.get(nx, ny) === SNAKE)  {				
+				grid.get(nx, ny) === SNAKE1 ||
+				grid.get(nx, ny) === SNAKE2)  {				
 				return init();
 			}	
 
@@ -260,7 +261,7 @@
 				snake1.speed = NORMAL;					
 			}		
 
-			grid.set(SNAKE, tail.x, tail.y);
+			grid.set(SNAKE1, tail.x, tail.y);
 			snake1.insert(tail.x, tail.y);
 		}	
 
@@ -284,7 +285,8 @@
 			}	
 			if( 0 > nx || nx > grid.width -1 ||
 				0 > ny || ny > grid.height - 1 ||
-				grid.get(nx, ny) === SNAKE)  {				
+				grid.get(nx, ny) === SNAKE1 ||
+				grid.get(nx, ny) === SNAKE2)  {				
 				return init();
 			}	
 
@@ -309,7 +311,7 @@
 				snake2.speed = NORMAL;					
 			}		
 
-			grid.set(SNAKE, tail.x, tail.y);
+			grid.set(SNAKE2, tail.x, tail.y);
 			snake2.insert(tail.x, tail.y);
 		}	
 	}
@@ -324,8 +326,8 @@
 					case EMPTY:
 						ctx.fillStyle = "#fff";
 						break;
-					case SNAKE:
-						ctx.fillStyle = "#0ff";
+					case WALL:
+						ctx.fillStyle = "#009B3A";
 						break;
 					case FRUIT:
 						ctx.fillStyle = "#f00";
@@ -335,6 +337,12 @@
 						break;
 					case SLOWER:
 						ctx.fillStyle = "#a99";
+						break;
+					case SNAKE1:
+						ctx.fillStyle = '#0ff';
+						break;
+					case SNAKE2:
+						ctx.fillStyle = '#F49600';
 						break;
 				}										
 				ctx.fillRect(x * tw, y * th, tw, th);	
