@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Simple</title>
+	<title>Cobra de berlim</title>
 	<<style type="text/css" >
 		canvas {
 			display: block;
@@ -63,7 +63,7 @@
 		direction: null,
 		last: null,
 		_queue: null,
-		speed: 1
+		speed: 1,
 
 		init: function(d, x, y) {
 			this.direction = d;
@@ -125,7 +125,7 @@
 		grid.init(EMPTY, COLS, ROWS);
 
 		var sp = {x: Math.floor(COLS/2), y:ROWS -1};
-		snake11.init(UP, sp.x, sp.y);
+		snake1.init(UP, sp.x, sp.y);
 		grid.set(SNAKE, sp.x, sp.y);
 
 		setFood();
@@ -141,7 +141,7 @@
 	//Atualiza a posição
 	function update() {
 		frames++;
-		if(keystate[KEY_LEFT] && snake11.direction !== RIGHT) snake1.direction = LEFT;
+		if(keystate[KEY_LEFT] && snake1.direction !== RIGHT) snake1.direction = LEFT;
 		if(keystate[KEY_UP] && snake1.direction !== DOWN) snake1.direction = UP;
 		if(keystate[KEY_RIGHT] && snake1.direction !== LEFT) snake1.direction = RIGHT;
 		if(keystate[KEY_DOWN] && snake1.direction !== UP) snake1.direction = DOWN;
@@ -154,16 +154,16 @@
 
 			switch (snake1.direction) {
 				case LEFT:					
-					nx-=snake1.sped;
+					nx--;
 					break;
 				case UP:
-					ny-=snake1.sped;
+					ny--;
 					break;
 				case RIGHT:
-					nx+=snake1.sped;
+					nx++;
 					break;
 				case DOWN:
-					ny+=snake1.sped;
+					ny++;
 					break;				
 			}	
 			if( 0 > nx || nx > grid.width -1 ||
