@@ -33,7 +33,9 @@
 	var BLOCK_1 = 16, BLOCK_2 = 32;
 
 	//Speed
-	var NORMAL = 5, FAST = 2
+	var STOPED = -1, NORMAL = 5, FAST = 2;
+
+	var BEGIN = 13;
 
 	var grid = {
 
@@ -179,20 +181,23 @@
 	}
 
 	function init() {
-		grid.init(EMPTY, COLS, ROWS);
-		setFasterTerrain();
+		if(snake1.speed !== STOPED && snake2.speed !== STOPED){
+			grid.init(EMPTY, COLS, ROWS);
+			setFasterTerrain();
 
-		var sp1 = {x: Math.floor(COLS/2), y:ROWS -1};
-		snake1.init(UP, sp1.x, sp1.y);
-		grid.set(SNAKE1, sp1.x, sp1.y);
-		snake1.speed = NORMAL;
+			var sp1 = {x: Math.floor(COLS/2), y:ROWS -1};
+			snake1.init(UP, sp1.x, sp1.y);
+			grid.set(SNAKE1, sp1.x, sp1.y);
+			snake1.speed = NORMAL;
 
-		var sp2 = {x: Math.floor(COLS-1), y:ROWS /2};
-		snake2.init(UP, sp2.x, sp2.y);
-		grid.set(SNAKE2, sp2.x, sp2.y);
-		snake2.speed = NORMAL;
+			var sp2 = {x: Math.floor(COLS-1), y:ROWS /2};
+			snake2.init(UP, sp2.x, sp2.y);
+			grid.set(SNAKE2, sp2.x, sp2.y);
+			snake2.speed = NORMAL;
 
-		setFood();
+			setFood();
+		}
+		
 	}
 
 	function loop() {
@@ -221,9 +226,13 @@
 		if(keystate[BLOCK_1] && snake1._queue.length >1) putBlock1 = true;
 		if(keystate[BLOCK_2] && snake2._queue.length >1) putBlock2 = true;
 
+		if(keystate[BEGIN]) continueGame();
+
+
+
 		//O número de frames determina a velocidade do jogo
 
-		if(frames%snake1.speed === 0) {
+		if(frames%snake1.speed === 0 && snake1.speed !== STOPED) {
 			var nx = snake1.last.x;
 			var ny = snake1.last.y;
 
@@ -246,6 +255,7 @@
 				grid.get(nx, ny) === SNAKE1 ||
 				grid.get(nx, ny) === SNAKE2 ||
 				grid.get(nx, ny) === WALL)  {
+				stopGame();
 				return init();
 			}
 
@@ -278,7 +288,7 @@
 			}
 		}
 
-		if(frames%snake2.speed === 0) {
+		if(frames%snake2.speed === 0 && snake2.speed !== STOPED) {
 			var nx = snake2.last.x;
 			var ny = snake2.last.y;
 
@@ -301,6 +311,7 @@
 				grid.get(nx, ny) === SNAKE1 ||
 				grid.get(nx, ny) === SNAKE2 ||
 				grid.get(nx, ny) === WALL)  {
+				stopGame();
 				return init();
 			}
 
@@ -329,8 +340,8 @@
 			snake2.insert(tail.x, tail.y);
 
 			if(putBlock2){
-					var tail = snake2.remove();
-					grid.set(WALL, tail.x, tail.y);
+				var tail = snake2.remove();
+				grid.set(WALL, tail.x, tail.y);
 			}
 		}
 	}
@@ -368,6 +379,19 @@
 			}
 		}
 	}
+
+	function stopGame() {
+		debugger;
+		snake1.speed = STOPED;
+		snake2.speed = STOPED;
+	}
+
+	function continueGame() {		
+		snake1.speed = NORMAL;
+		snake2.speed = NORMAL;
+		init();
+	}
+
 	main();
 
 </script>
