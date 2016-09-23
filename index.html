@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>Cobra de berlim</title>
-	<<style type="text/css" >
+	<style type="text/css" >
 		canvas {
 			display: block;
 			position: absolute;
@@ -16,10 +16,32 @@
 	</style>
 </head>
 <body>
-<<p>
+<p>
 	Press enter to restart!
 </p>
 <script charset="utf-8" async defer>
+	class Snake {
+		constructor(speed) {	
+			this.speed = speed;				
+		}
+
+		setPosition(direction, x, y) {
+			this.queue = [];
+			this.direction =  direction;			
+			this.insert(x, y);
+		}
+
+		insert(x, y) {
+			this.queue.unshift({ x:x, y:y});
+			this.last = this.queue[0];
+		}
+
+		remove() {
+			return this.queue.pop();
+		}
+	}
+
+
 	//Constants
 	var COLS = 26, ROWS = 26;
 
@@ -38,6 +60,9 @@
 	var STOPED = -1, NORMAL = 5, FAST = 2;
 
 	var BEGIN = 13;
+
+	var snake1 = new Snake(NORMAL);
+	var snake2 = new Snake(NORMAL);
 
 	var grid = {
 
@@ -65,55 +90,7 @@
 		get: function(x, y)  {
 			return this._grid[x][y];
 		}
-	}
-
-	var snake1 = {
-
-		direction: null,
-		last: null,
-		_queue: null,
-		speed: NORMAL,
-
-		init: function(d, x, y) {
-			this.direction = d;
-
-			this._queue = [];
-			this.insert(x, y);
-		},
-
-		insert: function(x, y)  {
-			this._queue.unshift({ x:x, y:y});
-			this.last = this._queue[0];
-		},
-
-		remove: function() {
-			return this._queue.pop();
-		}
-	}
-
-	var snake2 = {
-
-		direction: null,
-		last: null,
-		_queue: null,
-		speed: NORMAL,
-
-		init: function(d, x, y) {
-			this.direction = d;
-
-			this._queue = [];
-			this.insert(x, y);
-		},
-
-		insert: function(x, y)  {
-			this._queue.unshift({ x:x, y:y});
-			this.last = this._queue[0];
-		},
-
-		remove: function() {
-			return this._queue.pop();
-		}
-	}
+	}	
 
 
 	function setFood() {
@@ -188,12 +165,12 @@
 			setFasterTerrain();
 
 			var sp1 = {x: Math.floor(COLS/2), y:ROWS -1};
-			snake1.init(UP, sp1.x, sp1.y);
+			snake1.setPosition(UP, sp1.x, sp1.y);			
 			grid.set(SNAKE1, sp1.x, sp1.y);
 			snake1.speed = NORMAL;
 
 			var sp2 = {x: Math.floor(COLS-1), y:ROWS /2};
-			snake2.init(UP, sp2.x, sp2.y);
+			snake2.setPosition(UP, sp2.x, sp2.y);
 			grid.set(SNAKE2, sp2.x, sp2.y);
 			snake2.speed = NORMAL;
 
@@ -225,8 +202,8 @@
 		if(keystate[KEY_DOWN2] && snake2.direction !== UP) snake2.direction = DOWN;
 
 		var putBlock1 = false, putBlock2 = false;
-		if(keystate[BLOCK_1] && snake1._queue.length >1) putBlock1 = true;
-		if(keystate[BLOCK_2] && snake2._queue.length >1) putBlock2 = true;
+		if(keystate[BLOCK_1] && snake1.queue.length >1) putBlock1 = true;
+		if(keystate[BLOCK_2] && snake2.queue.length >1) putBlock2 = true;
 
 		if(keystate[BEGIN]) continueGame();
 
@@ -234,7 +211,7 @@
 
 		//O número de frames determina a velocidade do jogo
 
-		if(frames%snake1.speed === 0 && snake1.speed !== STOPED) {
+		if(frames%snake1.speed === 0 && snake1.speed !== STOPED) {			
 			var nx = snake1.last.x;
 			var ny = snake1.last.y;
 
@@ -262,7 +239,7 @@
 			}
 
 			if(grid.get(nx, ny) == FRUIT) {
-				console.log(snake1._queue)
+				console.log(snake1.queue)
 				var tail = {x:nx, y:ny};
 				setFood();
 			} else{
@@ -317,8 +294,7 @@
 				return init();
 			}
 
-			if(grid.get(nx, ny) == FRUIT) {
-				console.log(snake2._queue)
+			if(grid.get(nx, ny) == FRUIT) 	{			
 				var tail = {x:nx, y:ny};
 				setFood();
 			} else{
@@ -383,7 +359,6 @@
 	}
 
 	function stopGame() {
-		debugger;
 		snake1.speed = STOPED;
 		snake2.speed = STOPED;
 	}
