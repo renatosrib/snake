@@ -16,6 +16,27 @@
 	</style>
 </head>
 <body>
+<img src="imgs/fruit.png" id="fruit" style="width: 26px; height:26px; display:none">
+<img src="imgs/bodyh-1.png" id="bodyh1" style="width: 26px; height:26px; display:none">
+<img src="imgs/bodyv-1.png" id="bodyv1" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-left-1.png" id="headLeft1" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-up-1.png" id="headUp1" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-down-1.png" id="headDown1" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-right-1.png" id="headRight1" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-left-1.png" id="tailLeft1" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-up-1.png" id="tailUp1" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-down-1.png" id="tailDown1" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-right-1.png" id="tailRight1" style="width: 26px; height:26px; display:none">
+<img src="imgs/bodyh-2.png" id="bodyh2" style="width: 26px; height:26px; display:none">
+<img src="imgs/bodyv-2.png" id="bodyv2" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-left-2.png" id="headLeft2" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-up-2.png" id="headUp2" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-down-2.png" id="headDown2" style="width: 26px; height:26px; display:none">
+<img src="imgs/head-right-2.png" id="headRight2" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-left-2.png" id="tailLeft2" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-up-2.png" id="tailUp2" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-down-2.png" id="tailDown2" style="width: 26px; height:26px; display:none">
+<img src="imgs/tail-right-2.png" id="tailRight2" style="width: 26px; height:26px; display:none">
 <p>
 	Press enter to restart!
 </p>
@@ -167,7 +188,7 @@
 			var sp1 = {x: Math.floor(COLS/2), y:ROWS -1};
 			snake1.setPosition(UP, sp1.x, sp1.y);			
 			grid.set(SNAKE1, sp1.x, sp1.y);
-			snake1.speed = NORMAL;
+			snake1.speed = STOPED;
 
 			var sp2 = {x: Math.floor(COLS-1), y:ROWS /2};
 			snake2.setPosition(UP, sp2.x, sp2.y);
@@ -328,32 +349,82 @@
 		var tw = canvas.width/grid.width;
 		var th = canvas.height/grid.height;
 
+
 		for(var x = 0; x < grid.width; x++) {
 			for(var y = 0; y < grid.height; y++) {
 				switch(grid.get(x, y)) {
 					case EMPTY:
 						ctx.fillStyle = "#fff";
+						ctx.fillRect(x * tw, y * th, tw, th);
 						break;
 					case WALL:
 						ctx.fillStyle = "#009B3A";
+						ctx.fillRect(x * tw, y * th, tw, th);
 						break;
 					case FRUIT:
-						ctx.fillStyle = "#f00";
+						ctx.drawImage(fruit, x * tw, y * th, tw, th);	
 						break;
 					case FASTER:
 						ctx.fillStyle = "#111";
+						ctx.fillRect(x * tw, y * th, tw, th);
 						break;
 					case SLOWER:
 						ctx.fillStyle = "#a99";
+						ctx.fillRect(x * tw, y * th, tw, th);
 						break;
 					case SNAKE1:
-						ctx.fillStyle = '#0ff';
+						snakeHead = snake1.queue[0];
+						snakeTail = snake1.queue[snake1.queue.length - 1];
+						if(snake1.direction == LEFT && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headLeft1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == RIGHT && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headRight1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == UP && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headUp1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == DOWN && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headDown1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == RIGHT && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
+							ctx.drawImage(tailLeft1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == LEFT && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
+							ctx.drawImage(tailRight1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == DOWN && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
+							ctx.drawImage(tailUp1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == UP && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
+							ctx.drawImage(tailDown1, x * tw, y * th, tw, th);	
+						}else if(snake1.direction == DOWN || snake1.direction == UP){
+							ctx.drawImage(bodyv1, x * tw, y * th, tw, th);	
+						}else {
+							ctx.drawImage(bodyh1, x * tw, y * th, tw, th);	
+						}						
 						break;
 					case SNAKE2:
-						ctx.fillStyle = '#F49600';
+						snakeHead = snake2.queue[0];
+						snakeTail = snake2.queue[snake2.queue.length - 1];
+
+						if(snake2.direction == LEFT && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headLeft2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == RIGHT && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headRight2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == UP && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headUp2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == DOWN && snakeHead.x === x && snakeHead.y === y) {
+							ctx.drawImage(headDown2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == RIGHT && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
+							ctx.drawImage(tailLeft2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == LEFT && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
+							ctx.drawImage(tailRight2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == DOWN && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
+							ctx.drawImage(tailUp2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == UP && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
+							ctx.drawImage(tailDown2, x * tw, y * th, tw, th);	
+						}else if(snake2.direction == DOWN || snake2.direction == UP){
+							ctx.drawImage(bodyv2, x * tw, y * th, tw, th);	
+						}else {
+							ctx.drawImage(bodyh2, x * tw, y * th, tw, th);	
+						}						
 						break;
 				}
-				ctx.fillRect(x * tw, y * th, tw, th);
+				
 			}
 		}
 	}
