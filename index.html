@@ -18,6 +18,8 @@
 <body>
 <img src="imgs/fruit.png" id="fruit" style="width: 26px; height:26px; display:none">
 <img src="imgs/grass.gif" id="grass" style="width: 26px; height:26px; display:none">
+<img src="imgs/ice.jpg" id="ice" style="width: 26px; height:26px; display:none">
+<img src="imgs/sand.jpg" id="sand" style="width: 26px; height:26px; display:none">
 <img src="imgs/bodyh-1.png" id="bodyh1" style="width: 26px; height:26px; display:none">
 <img src="imgs/bodyv-1.png" id="bodyv1" style="width: 26px; height:26px; display:none">
 <img src="imgs/head-left-1.png" id="headLeft1" style="width: 26px; height:26px; display:none">
@@ -92,10 +94,10 @@
 	}
 
 	//Terrains
-	var SAND = [{ x: 0, y: 0}, {x:0, y: 1}, {x:0, y: 2}, 
+	var ICE = [{ x: 0, y: 0}, {x:0, y: 1}, {x:0, y: 2}, 
 				{ x: 1, y: 0}, {x:1, y: 1}, {x:1, y: 2}];
 
-	var ICE = 	[{ x: 10, y: 15}, {x:10, y: 16}, {x:10, y: 17}, 
+	var SAND = 	[{ x: 10, y: 15}, {x:10, y: 16}, {x:10, y: 17}, 
 				{ x: 11, y: 15}, {x:11, y: 16}, {x:11, y: 17}];			
 
 
@@ -390,8 +392,9 @@
 			for(var y = 0; y < grid.height; y++) {
 				let element;
 				switch(grid.get(x, y)) {
-					case EMPTY:						
-						ctx.drawImage(grass, x * tw, y * th, tw, th);	
+					case EMPTY:		
+						let terrain = 	getTerrain(x, y);
+						ctx.drawImage(terrain, x * tw, y * th, tw, th);	
 						break;
 					case WALL:
 						ctx.fillStyle = "#009B3A";
@@ -416,10 +419,28 @@
 						element = document.getElementById(snake2.getBodyId(x, y));						
 						ctx.drawImage(element, x * tw, y * th, tw, th);					
 						break;
-				}
-				
+				}							
 			}
 		}
+		
+	}
+
+	function getTerrain(x, y) {
+		let terrain;
+
+		for(var pos = 0; pos < ICE.length; pos ++) {
+			let current = ICE[pos];			
+			if(current.x === x && current.y === y) {
+				return document.getElementById('ice')	;
+			}
+		}
+		for(var pos = 0; pos < SAND.length; pos ++) {
+			let current = SAND[pos];			
+			if(current.x === x && current.y === y) {
+				return document.getElementById('sand');
+			}
+		}
+		return document.getElementById('grass');
 	}
 
 	function stopGame() {
