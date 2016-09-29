@@ -17,6 +17,7 @@
 </head>
 <body>
 <img src="imgs/fruit.png" id="fruit" style="width: 26px; height:26px; display:none">
+<img src="imgs/grass.gif" id="grass" style="width: 26px; height:26px; display:none">
 <img src="imgs/bodyh-1.png" id="bodyh1" style="width: 26px; height:26px; display:none">
 <img src="imgs/bodyv-1.png" id="bodyv1" style="width: 26px; height:26px; display:none">
 <img src="imgs/head-left-1.png" id="headLeft1" style="width: 26px; height:26px; display:none">
@@ -89,6 +90,13 @@
 
 		}
 	}
+
+	//Terrains
+	var SAND = [{ x: 0, y: 0}, {x:0, y: 1}, {x:0, y: 2}, 
+				{ x: 1, y: 0}, {x:1, y: 1}, {x:1, y: 2}];
+
+	var ICE = 	[{ x: 10, y: 15}, {x:10, y: 16}, {x:10, y: 17}, 
+				{ x: 11, y: 15}, {x:11, y: 16}, {x:11, y: 17}];			
 
 
 	//Constants
@@ -382,9 +390,8 @@
 			for(var y = 0; y < grid.height; y++) {
 				let element;
 				switch(grid.get(x, y)) {
-					case EMPTY:
-						ctx.fillStyle = "#fff";
-						ctx.fillRect(x * tw, y * th, tw, th);
+					case EMPTY:						
+						ctx.drawImage(grass, x * tw, y * th, tw, th);	
 						break;
 					case WALL:
 						ctx.fillStyle = "#009B3A";
