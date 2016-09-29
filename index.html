@@ -42,8 +42,9 @@
 </p>
 <script charset="utf-8" async defer>
 	class Snake {
-		constructor(speed) {	
+		constructor(speed, playerNumber) {	
 			this.speed = speed;				
+			this.playerNumber = playerNumber;
 		}
 
 		setPosition(direction, x, y) {
@@ -59,6 +60,33 @@
 
 		remove() {
 			return this.queue.pop();
+		}
+
+		getBodyId(x, y) {
+			let snakeHead = this.queue[0];
+			let snakeTail = this.queue[this.queue.length - 1];
+			if(this.direction == LEFT && snakeHead.x === x && snakeHead.y === y) {
+				return 'headLeft' + this.playerNumber;	
+			}else if(this.direction == RIGHT && snakeHead.x === x && snakeHead.y === y) {
+				return 'headRight' + this.playerNumber;	
+			}else if(this.direction == UP && snakeHead.x === x && snakeHead.y === y) {
+				return 'headUp' + this.playerNumber;	
+			}else if(this.direction == DOWN && snakeHead.x === x && snakeHead.y === y) {
+				return 'headDown' + this.playerNumber;	
+			}else if(this.direction == RIGHT && snakeTail.x === x && snakeTail.y === y && this.queue.length > 1) {
+				return 'tailLeft' + this.playerNumber;
+			}else if(this.direction == LEFT && snakeTail.x === x && snakeTail.y === y && this.queue.length > 1) {
+				return 'tailRight' + this.playerNumber;
+			}else if(this.direction == DOWN && snakeTail.x === x && snakeTail.y === y && this.queue.length > 1) {
+				return 'tailUp' + this.playerNumber;
+			}else if(this.direction == UP && snakeTail.x === x && snakeTail.y === y && this.queue.length > 1) {
+				return 'tailDown' + this.playerNumber;
+			}else if(this.direction == DOWN || this.direction == UP){
+				return 'bodyv'+ this.playerNumber;
+			}else {
+				return 'bodyh'+ this.playerNumber;
+			}						
+
 		}
 	}
 
@@ -82,8 +110,8 @@
 
 	var BEGIN = 13;
 
-	var snake1 = new Snake(NORMAL);
-	var snake2 = new Snake(NORMAL);
+	var snake1 = new Snake(NORMAL, 1);
+	var snake2 = new Snake(NORMAL, 2);
 
 	var grid = {
 
@@ -352,6 +380,7 @@
 
 		for(var x = 0; x < grid.width; x++) {
 			for(var y = 0; y < grid.height; y++) {
+				let element;
 				switch(grid.get(x, y)) {
 					case EMPTY:
 						ctx.fillStyle = "#fff";
@@ -372,56 +401,13 @@
 						ctx.fillStyle = "#a99";
 						ctx.fillRect(x * tw, y * th, tw, th);
 						break;
-					case SNAKE1:
-						snakeHead = snake1.queue[0];
-						snakeTail = snake1.queue[snake1.queue.length - 1];
-						if(snake1.direction == LEFT && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headLeft1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == RIGHT && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headRight1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == UP && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headUp1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == DOWN && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headDown1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == RIGHT && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
-							ctx.drawImage(tailLeft1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == LEFT && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
-							ctx.drawImage(tailRight1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == DOWN && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
-							ctx.drawImage(tailUp1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == UP && snakeTail.x === x && snakeTail.y === y && snake1.queue.length > 1) {
-							ctx.drawImage(tailDown1, x * tw, y * th, tw, th);	
-						}else if(snake1.direction == DOWN || snake1.direction == UP){
-							ctx.drawImage(bodyv1, x * tw, y * th, tw, th);	
-						}else {
-							ctx.drawImage(bodyh1, x * tw, y * th, tw, th);	
-						}						
+					case SNAKE1:	
+						element = document.getElementById(snake1.getBodyId(x, y));						
+						ctx.drawImage(element, x * tw, y * th, tw, th);												
 						break;
 					case SNAKE2:
-						snakeHead = snake2.queue[0];
-						snakeTail = snake2.queue[snake2.queue.length - 1];
-
-						if(snake2.direction == LEFT && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headLeft2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == RIGHT && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headRight2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == UP && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headUp2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == DOWN && snakeHead.x === x && snakeHead.y === y) {
-							ctx.drawImage(headDown2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == RIGHT && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
-							ctx.drawImage(tailLeft2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == LEFT && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
-							ctx.drawImage(tailRight2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == DOWN && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
-							ctx.drawImage(tailUp2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == UP && snakeTail.x === x && snakeTail.y === y && snake2.queue.length > 1) {
-							ctx.drawImage(tailDown2, x * tw, y * th, tw, th);	
-						}else if(snake2.direction == DOWN || snake2.direction == UP){
-							ctx.drawImage(bodyv2, x * tw, y * th, tw, th);	
-						}else {
-							ctx.drawImage(bodyh2, x * tw, y * th, tw, th);	
-						}						
+						element = document.getElementById(snake2.getBodyId(x, y));						
+						ctx.drawImage(element, x * tw, y * th, tw, th);					
 						break;
 				}
 				
