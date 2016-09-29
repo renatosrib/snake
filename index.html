@@ -94,8 +94,9 @@
 	}
 
 	//Terrains
-	var ICE = [{ x: 0, y: 0}, {x:0, y: 1}, {x:0, y: 2}, 
-				{ x: 1, y: 0}, {x:1, y: 1}, {x:1, y: 2}];
+	var ICE = [{ x: 0, y: 0}, {x:0, y: 1}, {x:0, y: 2}, {x:0, y: 3}, {x:0, y: 4},
+				{ x: 1, y: 0}, {x:1, y: 1}, {x:1, y: 2}, {x:1, y: 3}, {x:1, y: 4},
+				{ x: 2, y: 0}, {x:2, y: 1}, {x:2, y: 2}, {x:2, y: 3}, {x:2, y: 4}];
 
 	var SAND = 	[{ x: 10, y: 15}, {x:10, y: 16}, {x:10, y: 17}, 
 				{ x: 11, y: 15}, {x:11, y: 16}, {x:11, y: 17}];			
@@ -116,7 +117,7 @@
 	var BLOCK_1 = 16, BLOCK_2 = 32;
 
 	//Speed
-	var STOPED = -1, NORMAL = 5, FAST = 2;
+	var STOPED = -1, SLOW = 9, NORMAL = 5, FAST = 2;
 
 	var BEGIN = 13;
 
@@ -226,7 +227,7 @@
 			var sp1 = {x: Math.floor(COLS/2), y:ROWS -1};
 			snake1.setPosition(UP, sp1.x, sp1.y);			
 			grid.set(SNAKE1, sp1.x, sp1.y);
-			snake1.speed = STOPED;
+			snake1.speed = NORMAL;
 
 			var sp2 = {x: Math.floor(COLS-1), y:ROWS /2};
 			snake2.setPosition(UP, sp2.x, sp2.y);
@@ -247,6 +248,24 @@
 		window.requestAnimationFrame(loop, canvas);
 	}
 
+	function updateSnakeSpeed (snake) {		
+		for(var sq = 0; sq < snake.queue.length; sq++) {
+			for(var i = 0;i<SAND.length;i++) {	
+				if(snake.queue[sq].x===SAND[i].x && snake.queue[sq].y===SAND[i].y ) {					
+					snake.speed = SLOW; 				
+				}
+			}
+		}
+		for(var sq = 0; sq < snake.queue.length; sq++) {
+			for(var i = 0;i<ICE.length;i++) {	
+				if(snake.queue[sq].x===ICE[i].x && snake.queue[sq].y===ICE[i].y) {					
+					snake.speed = FAST; 					
+				}
+			}
+		}
+		// snake.speed = NORMAL;
+		 
+	}
 	//Atualiza a posição
 	function update() {
 		frames++;
@@ -297,8 +316,7 @@
 				return init();
 			}
 
-			if(grid.get(nx, ny) == FRUIT) {
-				console.log(snake1.queue)
+			if(grid.get(nx, ny) == FRUIT) {				
 				var tail = {x:nx, y:ny};
 				setFood();
 			} else{
@@ -308,8 +326,7 @@
 				tail.y = ny;
 			}
 
-			if(grid.get(nx, ny) == FASTER) {
-				snake1.speed = FAST;
+			if(grid.get(nx, ny) == FASTER) {				
 				setFasterTerrain();
 				setSlowerTerrain();
 			}
@@ -324,6 +341,7 @@
 					var tail = snake1.remove();
 					grid.set(WALL, tail.x, tail.y);
 			}
+			updateSnakeSpeed(snake1);
 		}
 
 		if(frames%snake2.speed === 0 && snake2.speed !== STOPED) {
@@ -363,10 +381,10 @@
 				tail.y = ny;
 			}
 
-			if(grid.get(nx, ny) == FASTER) {
-				snake2.speed = FAST;
+			if(grid.get(nx, ny) == FASTER) {				
 				setFasterTerrain();
 				setSlowerTerrain();
+				
 			}
 
 			if(grid.get(nx, ny) == SLOWER) {
@@ -375,12 +393,13 @@
 
 			grid.set(SNAKE2, tail.x, tail.y);
 			snake2.insert(tail.x, tail.y);
+			updateSnakeSpeed(snake2);
 
 			if(putBlock2){
 				var tail = snake2.remove();
 				grid.set(WALL, tail.x, tail.y);
 			}
-		}
+		}		
 	}
 
 	function draw() {
